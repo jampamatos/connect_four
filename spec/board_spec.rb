@@ -95,9 +95,78 @@ describe Board do
       board_chip.dimensions = Array.new(6) { Array.new(7, player.color) }
       expect { board_chip.place_chip(player, 0) }.to raise_error('Column is full')
     end
-    
+
     it 'raises an error if the placement is outside of board boundaries' do
       expect { board_chip.place_chip(player, 7) }.to raise_error('Placement outside of board boundaries')
+    end
+  end
+
+  describe '#check_horizontal' do
+    subject(:board_horizontal) { described_class.new }
+    let(:player1) { double('player1', color: 'red') }
+    let(:player2) { double('player2', color: 'yellow') }
+  
+    it "return 'red' when player 1 has an horizontal win" do
+      board_horizontal.place_chip(player1, 0)
+      board_horizontal.place_chip(player1, 1)
+      board_horizontal.place_chip(player1, 2)
+      board_horizontal.place_chip(player1, 3)
+      expect(board_horizontal.check_horizontal).to eq('red')
+    end
+
+    it "return 'yellow' when player 2 has an horizontal win" do
+      board_horizontal.place_chip(player2, 0)
+      board_horizontal.place_chip(player2, 1)
+      board_horizontal.place_chip(player2, 2)
+      board_horizontal.place_chip(player2, 3)
+      expect(board_horizontal.check_horizontal).to eq('yellow')
+    end
+
+    it 'return nil if four horizontal chips are not the same color' do
+      board_horizontal.place_chip(player1, 0)
+      board_horizontal.place_chip(player2, 1)
+      board_horizontal.place_chip(player1, 2)
+      board_horizontal.place_chip(player2, 3)
+      expect(board_horizontal.check_horizontal).to eq(nil)
+    end
+  end
+
+  describe '#check_vertical' do
+    subject(:board_vertical) { described_class.new }
+    let(:player1) { double('player1', color: 'red') }
+    let(:player2) { double('player2', color: 'yellow') }
+
+    it "return 'red' when player 1 has an vertical win" do
+      4.times { board_vertical.place_chip(player1, 1) }
+      expect(board_vertical.check_vertical).to eq('red')
+    end
+
+    it "return 'yellow' when player 2 has an vertical win" do
+      4.times { board_vertical.place_chip(player2, 3) }
+      expect(board_vertical.check_vertical).to eq('yellow')
+    end
+
+    it 'return nil if four vertical chips are not the same color' do
+      board_vertical.place_chip(player1, 0)
+      board_vertical.place_chip(player2, 0)
+      board_vertical.place_chip(player1, 0)
+      board_vertical.place_chip(player2, 0)
+      expect(board_vertical.check_vertical).to eq(nil)
+    end
+  end
+
+  describe '#game_over?' do
+
+    xit 'returns nil if there is no win' do
+    end
+
+    xit 'player 1 has won the game' do
+    end
+
+    xit 'player 2 has won the game' do
+    end
+
+    xit 'game is tied' do
     end
   end
 end

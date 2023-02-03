@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'pry-byebug'
+
 class Board
   attr_reader :row_cell, :column_cell
   attr_accessor :dimensions
@@ -32,4 +34,32 @@ class Board
       row -= 1
     end
   end
+
+  def check_horizontal
+    @dimensions.each do |row|
+      next if row.compact.empty?
+
+      (0..(row.length - 4)).each do |i|
+        win = row[i..i + 3].all? { |chip| chip == row[i] }
+        return row[i] if win
+      end
+    end
+    nil
+  end
+
+  def check_vertical
+    dimensions.transpose.each do |column|
+      next if column.compact.empty?
+
+      (0..(column.length - 4)).each do |i|
+        win = column[i..i + 3].all? { |chip| chip == column[i] }
+        return column[i] if win
+      end
+    end
+    nil
+  end
+
+  # def game_over?
+  #   pass
+  # end
 end
