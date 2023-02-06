@@ -34,41 +34,6 @@ describe Board do
     end
   end
 
-  describe '#valid_placement' do
-    subject(:board) { described_class.new }
-
-    it 'returns false if column is out of bounds' do
-      expect(board.valid_placement?(8)).to eq(false)
-    end
-
-    it 'returns true if placement is valid' do
-      expect(board.valid_placement?(0)).to eq(true)
-    end
-  end
-
-  describe '#column_full?' do
-    subject(:board_chip) { described_class.new }
-    let(:player) { double('player', color: 'red') }
-
-    it 'returns false if the column is not full' do
-      expect(board_chip.column_full?(0)).to be(false)
-    end
-
-    it 'returns true if the column is full' do
-      6.times do
-        board_chip.place_chip(player, 0)
-      end
-      expect(board_chip.column_full?(0)).to be(true)
-    end
-
-    it 'returns false if the column is not full after some chips have been placed' do
-      3.times do
-        board_chip.place_chip(player, 0)
-      end
-      expect(board_chip.column_full?(0)).to be(false)
-    end
-  end
-
   describe '#place_chip' do
     subject(:board_chip) { described_class.new }
     let(:player) { double('player', color: 'red') }
@@ -105,7 +70,7 @@ describe Board do
     subject(:board_horizontal) { described_class.new }
     let(:player1) { double('player1', color: 'red') }
     let(:player2) { double('player2', color: 'yellow') }
-  
+
     it "return 'red' when player 1 has an horizontal win" do
       board_horizontal.place_chip(player1, 0)
       board_horizontal.place_chip(player1, 1)
@@ -152,6 +117,11 @@ describe Board do
       board_vertical.place_chip(player1, 0)
       board_vertical.place_chip(player2, 0)
       expect(board_vertical.check_vertical).to eq(nil)
+    end
+  end
+
+  describe '#check_horizontal_left_right' do
+    it "return 'red' when player 1 has an horizontal top left to bottom right win" do
     end
   end
 

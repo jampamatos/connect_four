@@ -10,16 +10,7 @@ class Board
     @dimensions = Array.new(rows) { Array.new(columns) }
   end
 
-  def valid_placement?(column)
-    column >= 0 && column < dimensions[0].size && !column_full?(column)
-  end
 
-  def column_full?(column)
-    dimensions.each do |row|
-      return false if row[column].nil?
-    end
-    true
-  end
 
   def place_chip(player, column)
     return raise 'Column is full' if column_full?(column)
@@ -36,13 +27,11 @@ class Board
   end
 
   def check_horizontal
-    @dimensions.each do |row|
+    dimensions.each do |row|
       next if row.compact.empty?
 
-      (0..(row.length - 4)).each do |i|
-        win = row[i..i + 3].all? { |chip| chip == row[i] }
-        return row[i] if win
-      end
+      winner = four_consecutive_chips?(row, 4)
+      return row[0] if winner
     end
     nil
   end
@@ -51,10 +40,8 @@ class Board
     dimensions.transpose.each do |column|
       next if column.compact.empty?
 
-      (0..(column.length - 4)).each do |i|
-        win = column[i..i + 3].all? { |chip| chip == column[i] }
-        return column[i] if win
-      end
+      winner = four_consecutive_chips?(column, 4)
+      return column[-1] if winner
     end
     nil
   end
@@ -62,4 +49,23 @@ class Board
   # def game_over?
   #   pass
   # end
+
+  private
+
+  def four_consecutive_chips?(array, consecutive_chips)
+    array.each_cons(consecutive_chips).any? do |sub_array|
+      sub_array.uniq.size == 1
+    end
+  end
+
+  def valid_placement?(column)
+    column >= 0 && column < dimensions[0].size && !column_full?(column)
+  end
+
+  def column_full?(column)
+    dimensions.each do |row|
+      return false if row[column].nil?
+    end
+    true
+  end
 end
