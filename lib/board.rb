@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'pry-byebug'
-
 class Board
   attr_accessor :grid
 
@@ -27,8 +25,10 @@ class Board
     grid.each do |row|
       next if row.compact.empty?
 
-      winner = four_consecutive_chips?(row, 4)
-      return row[0] if winner
+      row.each_cons(4) do |subarray|
+        winner = four_consecutive_chips?(subarray, 4)
+        return subarray.first if winner
+      end
     end
     nil
   end
@@ -37,8 +37,10 @@ class Board
     grid.transpose.each do |column|
       next if column.compact.empty?
 
-      winner = four_consecutive_chips?(column, 4)
-      return column[-1] if winner
+      column.each_cons(4) do |subarray|
+        winner = four_consecutive_chips?(subarray, 4)
+        return subarray.first if winner
+      end
     end
     nil
   end
@@ -54,7 +56,6 @@ class Board
   end
 
   def game_over?
-    
     check = check_horizontal
     return check if check
 

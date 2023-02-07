@@ -64,6 +64,10 @@ describe Board do
     it 'raises an error if the placement is outside of board boundaries' do
       expect { board_chip.place_chip(player, 7) }.to raise_error('Placement outside of board boundaries')
     end
+
+    it 'raises an error if placement is a negative number' do
+      expect{ board_chip.place_chip(player1, -2).to raise_error('Placement outside of board boundaries')}
+    end
   end
 
   describe '#check_horizontal' do
@@ -94,6 +98,28 @@ describe Board do
       board_horizontal.place_chip(player2, 3)
       expect(board_horizontal.check_horizontal).to eq(nil)
     end
+
+    it "returns nil if there's no horizontal win yet" do
+      board_horizontal.place_chip(player1, 0)
+      board_horizontal.place_chip(player1, 1)
+      expect(board_horizontal.check_horizontal).to eq(nil)
+    end
+
+    it 'works correctly for a win that starts at the first row' do
+      board_horizontal.place_chip(player1, 0)
+      board_horizontal.place_chip(player1, 1)
+      board_horizontal.place_chip(player1, 2)
+      board_horizontal.place_chip(player1, 3)
+      expect(board_horizontal.check_horizontal).to eq('red')
+    end
+
+    it 'works correctly for a win that starts at a non-zero row' do
+      board_horizontal.place_chip(player1, 3)
+      board_horizontal.place_chip(player1, 4)
+      board_horizontal.place_chip(player1, 5)
+      board_horizontal.place_chip(player1, 6)
+      expect(board_horizontal.check_horizontal).to eq('red')
+    end
   end
 
   describe '#check_vertical' do
@@ -117,6 +143,21 @@ describe Board do
       board_vertical.place_chip(player1, 0)
       board_vertical.place_chip(player2, 0)
       expect(board_vertical.check_vertical).to eq(nil)
+    end
+
+    it "it returns nil if there's no vertical win yet" do
+      3.times { board_vertical.place_chip(player1, 3) }
+      expect(board_vertical.check_vertical).to eq(nil)
+    end
+
+    it 'works correctly for a win that starts at the first column' do
+      4.times { board_vertical.place_chip(player1, 0) }
+      expect(board_vertical.check_vertical).to eq('red')
+    end
+
+    it 'works correctly for a win that starts at a non-zero column' do
+      4.times { board_vertical.place_chip(player1, 6) }
+      expect(board_vertical.check_vertical).to eq('red')
     end
   end
 
@@ -166,6 +207,21 @@ describe Board do
       expect(board.check_diagonal).to eq('yellow')
     end
 
+    it 'it works correctly for a win starting from the middle of the board' do
+      board = Board.new
+      board.grid =
+        [
+          [nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, 'red', nil],
+          [nil, nil, nil, nil, 'red', nil, nil],
+          [nil, nil, nil, 'red', nil, nil, nil],
+          [nil, nil, 'red', nil, nil, nil, nil]
+        ]
+
+      expect(board.check_diagonal).to eq('red')
+    end
+
     it 'return nil if four diagonal chips are not the same color' do
       board = Board.new
       board.grid =
@@ -176,6 +232,21 @@ describe Board do
           [nil, 'red', nil, nil, nil, nil, nil],
           [nil, nil, 'yellow', nil, nil, nil, nil],
           [nil, nil, nil, 'red', nil, nil, nil]
+        ]
+
+      expect(board.check_diagonal).to eq(nil)
+    end
+
+    it "returns nil if there's no diagonal win yet" do
+      board = Board.new
+      board.grid =
+        [
+          [nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, 'red', nil, nil],
+          [nil, nil, nil, 'red', nil, nil, nil],
+          [nil, nil, 'red', nil, nil, nil, nil]
         ]
 
       expect(board.check_diagonal).to eq(nil)
