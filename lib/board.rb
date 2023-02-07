@@ -1,10 +1,28 @@
 # frozen_string_literal: true
 
+require 'colorize'
+
 class Board
   attr_accessor :grid
 
   def initialize(rows = 6, columns = 7)
     @grid = Array.new(rows) { Array.new(columns) }
+  end
+
+  def show_board
+    puts ' 1   2   3   4   5   6   7'
+    puts "--- --- --- --- --- --- ---".light_yellow
+    grid.each do |row|
+      row_display = row.map do |cell|
+        if cell.nil?
+          "   "
+        else
+          " #{ "O".colorize(:color => cell.to_sym)} "
+        end
+      end
+      puts row_display.join("|")
+      puts "--- --- --- --- --- --- ---".light_yellow
+    end
   end
 
   def place_chip(player, column)
@@ -119,3 +137,16 @@ class Board
     grid.flatten.none?(&:nil?)
   end
 end
+
+board = Board.new
+board.show_board
+board.grid =
+        [
+          [nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, 'red', nil, nil],
+          [nil, nil, nil, 'red', nil, nil, nil],
+          [nil, nil, 'red', 'yellow', nil, nil, nil]
+        ]
+board.show_board
