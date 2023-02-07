@@ -137,16 +137,3 @@ class Board
     grid.flatten.none?(&:nil?)
   end
 end
-
-board = Board.new
-board.show_board
-board.grid =
-        [
-          [nil, nil, nil, nil, nil, nil, nil],
-          [nil, nil, nil, nil, nil, nil, nil],
-          [nil, nil, nil, nil, nil, nil, nil],
-          [nil, nil, nil, nil, 'red', nil, nil],
-          [nil, nil, nil, 'red', nil, nil, nil],
-          [nil, nil, 'red', 'yellow', nil, nil, nil]
-        ]
-board.show_board
