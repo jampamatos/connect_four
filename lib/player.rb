@@ -8,4 +8,8 @@ class Player
     @color = color
     @wins = 0
   end
+
+  def increment_wins
+    @wins += 1
+  end
 end
