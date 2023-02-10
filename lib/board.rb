@@ -6,26 +6,37 @@ require 'json'
 class Board
   attr_accessor :grid
 
+  # Creates a new Connect Four game board.
+  #   @param rows [Integer] The number of rows in the board. Default is 6.
+  #   @param columns [Integer] The number of columns in the board. Default is 7.
+  #   @param grid [Array<Array<String>>] A two-dimensional array representing the game board. Default is `nil`.
+  #
+  #   @return [ConnectFour] A new Connect Four game board.
   def initialize(rows = 6, columns = 7, grid = nil)
     @grid = grid || Array.new(rows) { Array.new(columns) }
   end
 
+  # Display the game board to the console
+  #   @return [nil] prints the game board to the console
   def show_board
     puts ' 1   2   3   4   5   6   7'
-    puts "--- --- --- --- --- --- ---".light_yellow
-    grid.each do |row|
+    grid.each_with_index do |row, i|
       row_display = row.map do |cell|
-        if cell.nil?
-          "   "
-        else
-          " #{ "O".colorize(:color => cell.to_sym)} "
-        end
-      end
-      puts row_display.join("|")
-      puts "--- --- --- --- --- --- ---".light_yellow
+        cell.nil? ? '   ' : " #{'O'.colorize(color: cell.to_sym)} "
+      end.join('|')
+      puts row_display
+      puts '--- --- --- --- --- --- ---'.light_yellow unless i == grid.size
     end
   end
 
+  # Places a chip for a player in the specified column.
+  # Raises an error if the column is full or the placement is outside the board boundaries.
+  # The error handling is done by the calling method in the GameManager class.
+  #   @param player [Player] The player who is making the move
+  #   @param column [Integer] The index of the column where the chip is to be placed
+  #
+  #   @return [String] The color of the placed chip
+  #   @raise [RuntimeError] If the specified column is full or outside the boundaries of the board
   def place_chip(player, column)
     return raise 'Column is full' if column_full?(column)
     return raise 'Placement outside of board boundaries' unless valid_placement?(column)
@@ -40,6 +51,9 @@ class Board
     end
   end
 
+  # Check for 4 consecutive chips of the same color in each row of the grid
+  #   @return [String, Nil] the color of the first chip in the winning sequence of 4 chips if a win is detected,
+  #   or nil if no win is detected
   def check_horizontal
     grid.each do |row|
       next if row.compact.empty?
@@ -52,6 +66,8 @@ class Board
     nil
   end
 
+  # Checks for 4 consecutive chips of the same color in a vertical line on the game grid
+  #   @return [Object, nil] returns the color of the winning player if there is a winner, otherwise returns nil.
   def check_vertical
     grid.transpose.each do |column|
       next if column.compact.empty?
@@ -64,6 +80,9 @@ class Board
     nil
   end
 
+  # Checks for 4 consecutive chips of the same color in a diagonal line
+  # (left to right or right to left) on the game grid
+  #   @return [Object, nil] returns the color of the winning player if there is a winner, otherwise returns nil.
   def check_diagonal
     diagonal_l_to_r = diagonal_l_to_r?
     return diagonal_l_to_r if diagonal_l_to_r
@@ -74,6 +93,14 @@ class Board
     nil
   end
 
+  # Determines if the game is over and returns the result
+  #   @return [Object, nil] returns the color of the winning player if there is a winner,
+  #   'tie' if the game is a draw, otherwise returns nil if the game is not over.
+  #
+  # This method calls the #check_horizontal, #check_vertical and #check_diagonal methods to check
+  # for 4 consecutive chips of the same color.
+  # If a winner is found, the color of the winning player is returned. If the game grid is full and no winner is found,
+  # 'tie' is returned to indicate a draw. If the game is not over, nil is returned.
   def game_over?
     check = check_horizontal
     return check if check
@@ -89,33 +116,49 @@ class Board
     nil
   end
 
+  # Converts the game grid data into a JSON string representation
+  #   @return [String] a JSON string representing the game grid data
   def serialize
     {
       grid: @grid
     }.to_json
   end
 
+  # Deserializes a JSON string into a Board object
+  #   @param string [String] JSON string representation of a Board object
+  #   @return [Board] a new Board object initialized from the JSON string
   def self.deserialize(string)
     data = JSON.parse(string)
-    grid = data["grid"]
-    rows = data["rows"]
-    columns = data["columns"]
+    grid = data['grid']
+    rows = data['rows']
+    columns = data['columns']
 
     Board.new(rows, columns, grid)
   end
 
   private
 
+  # Check if there are 4 consecutive chips of the same color in the given array
+  #   @param array [Array] the array of chips to check
+  #   @param consecutive_chips [Integer] the number of consecutive chips to look for
+  #
+  #   @return [Boolean] returns true if there are 4 consecutive chips of the same color, otherwise returns false.
   def four_consecutive_chips?(array, consecutive_chips)
     array.each_cons(consecutive_chips).any? do |sub_array|
-      sub_array.uniq.size == 1 && sub_array[0] != nil
+      sub_array.uniq.size == 1 && !sub_array[0].nil?
     end
   end
 
+  # Determines if a chip placement in a column is valid
+  #   @param [Integer] column The column number to check for validity
+  #   @return [Boolean] Returns true if the chip placement in the specified column is valid, otherwise returns false.
   def valid_placement?(column)
     column >= 0 && column < grid[0].size && !column_full?(column)
   end
 
+  # Determines whether the specified column is full on the game grid
+  #   @param column [Integer] the column to check
+  #   @return [Boolean] returns true if the column is full, otherwise false.
   def column_full?(column)
     grid.each do |row|
       return false if row[column].nil?
@@ -149,6 +192,8 @@ class Board
     nil
   end
 
+  # Returns a boolean indicating if the game grid is full or not.
+  #   @return [Boolean] True if the grid is full, otherwise False.
   def grid_full?
     grid.flatten.none?(&:nil?)
   end
