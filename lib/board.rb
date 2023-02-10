@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 require 'colorize'
+require 'json'
 
 class Board
   attr_accessor :grid
 
-  def initialize(rows = 6, columns = 7)
-    @grid = Array.new(rows) { Array.new(columns) }
+  def initialize(rows = 6, columns = 7, grid = nil)
+    @grid = grid || Array.new(rows) { Array.new(columns) }
   end
 
   def show_board
@@ -86,6 +87,21 @@ class Board
     return 'tie' if grid_full?
 
     nil
+  end
+
+  def serialize
+    {
+      grid: @grid
+    }.to_json
+  end
+
+  def self.deserialize(string)
+    data = JSON.parse(string)
+    grid = data["grid"]
+    rows = data["rows"]
+    columns = data["columns"]
+
+    Board.new(rows, columns, grid)
   end
 
   private
