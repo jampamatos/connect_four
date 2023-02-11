@@ -3,6 +3,11 @@
 require 'colorize'
 require 'json'
 
+# Board Class
+# A class representing the Connect Four game board
+# It contains a grid that will hold the player's chips as they play them
+# It has methods for showing the board, placing chips, checking placement and
+# winning conditions, as well as serializing/deserializing its data to/from JSON
 class Board
   attr_accessor :grid
 
@@ -166,6 +171,8 @@ class Board
     true
   end
 
+  # Check if there is a winning sequence of chips on the grid, from the left to the right diagonal.
+  #   @return [String, nil] the winning player's chip symbol, or nil if no player has won yet
   def diagonal_l_to_r?
     0.upto(grid.size - 4).each do |i|
       0.upto(grid[0].size - 4).each do |j|
@@ -179,6 +186,8 @@ class Board
     nil
   end
 
+  # Check if there is a winning sequence of chips on the grid, from the left to the right diagonal.
+  #   @return [String, nil] the winning player's chip symbol, or nil if no player has won yet
   def diagonal_r_to_l?
     3.upto(grid.size - 1).each do |i|
       0.upto(grid[0].size - 4).each do |j|
