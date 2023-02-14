@@ -16,10 +16,9 @@ class GameManager
   PLAYER_1_DEFAULT = nil
   PLAYER_2_DEFAULT = nil
   BOARD_DEFAULT = nil
-  FIRST_DEFAULT = PLAYER_1_DEFAULT
   CURRENT_PLAYER_DEFAULT = PLAYER_1_DEFAULT
 
-  attr_accessor :player1, :player2, :ties, :board, :first
+  attr_accessor :player1, :player2, :ties, :board
   attr_reader :current_player
 
   def start_game
@@ -32,21 +31,8 @@ class GameManager
     when 'N'
       setup_game
     when 'L'
-      loaded_game = GameIO.load_game
-      if loaded_game
-        @board = loaded_game[:board]
-        @player1 = loaded_game[:player1]
-        @player2 = loaded_game[:player2]
-        @current_player = loaded_game[:current_player]
-        @first = loaded_game[:first]
-        play_round
-      else
-        puts ''
-        puts 'Returning to main menu...'
-        puts ''
-        sleep(2)
-        start_game
-      end
+      # load game logic
+      pass
     when 'Q'
       Messages.quit_game
     end
@@ -58,51 +44,40 @@ class GameManager
     @player1 = Player.new(player1_name, player1_color)
     @player2 = Player.new(player2_name, player2_color)
     @board = Board.new
+    @current_player = @player1
     play_round
   end
 
   def play_round
     loop do
-      players = @first == @player1 ? [@player2, @player1] : [@player1, @player2]
-      players.each do |player|
-        @current_player = player
-        Messages.clear_screen
-        Messages.display_turn(player)
-        @board.show_board
-        loop do
-          input = Messages.input_column(player)
-          case input
-          when 's'
-            GameIO.save_game(board, player1, player2, current_player, first)
-            next
-          when 'l'
-            if GameIO.load_game
-              play_round
-            else
-              puts ''
-              puts 'Returning to game...'
-              puts ''
-              sleep(1)
-              Messages.clear_screen
-              @board.show_board
-              next
-            end
-          when 'q'
-            Messages.quit_game
+      Messages.clear_screen
+      Messages.display_turn(@current_player)
+      @board.show_board
+      loop do
+        input = Messages.input_column(@current_player)
+        case input
+        when 's'
+          # save game logic
+          pass
+        when 'l'
+          # save game logic
+          pass
+        when 'q'
+          Messages.quit_game
+        else
+          column = input.to_i
+          case @board.place_chip(@current_player, column)
+          when :column_full
+            puts 'Column is full. Please select another column.'
+          when :placement_outside_boundaries
+            puts 'Placement outside of board boundaries. Please select a valid column.'
           else
-            column = input.to_i
-            case @board.place_chip(player, column)
-            when :column_full
-              puts 'Column is full. Please select another column.'
-            when :placement_outside_boundaries
-              puts 'Placement outside of board boundaries. Please select a valid column.'
-            else
-              break
-            end
+            break
           end
         end
-        game_is_over(@board.game_over?) if @board.game_over?
       end
+      @current_player = @current_player == @player1 ? @player2 : @player1
+      game_is_over(@board.game_over?) if @board.game_over?
     end
   end
 
@@ -113,26 +88,6 @@ class GameManager
       player = game == @player1.color ? @player1 : @player2
       game_victory(player)
     end
-  end
-
-  def serialize
-    GameIO.serialize({
-                       player1: @player1,
-                       player2: @player2,
-                       board: @board,
-                       first: @first,
-                       current_player: @current_player
-                     })
-  end
-
-  def self.deserialize(data)
-    game = new
-    game.player1 = data[:player1]
-    game.player2 = data[:player2]
-    game.board = data[:board]
-    game.first = data[:first]
-    game.current_player = data[:current_player]
-    game
   end
 
   private
@@ -147,6 +102,7 @@ class GameManager
   end
 
   def game_tie
+    Messages.clear_screen
     @board.show_board
     puts ''
     puts "The game is a #{'tie'.bold}!"
@@ -173,7 +129,7 @@ class GameManager
       play_again = gets.chomp.downcase
       if play_again == 'y'
         @board = Board.new
-        @first = @first == @player1 ? @player2 : @player1
+        @current_player = @current_player == @player1 ? @player2 : @player1
         play_round
         break
       elsif play_again == 'n'

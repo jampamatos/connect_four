@@ -119,25 +119,6 @@ class Board
     nil
   end
 
-  # Converts the game grid data into a JSON string representation
-  #   @return [String] a JSON string representing the game grid data
-  def serialize
-    {
-      grid: @grid
-    }.to_json
-  end
-
-  # Deserializes a JSON string into a Board object
-  #   @param string [String] JSON string representation of a Board object
-  #   @return [Board] a new Board object initialized from the JSON string
-  def self.deserialize(string)
-    data = JSON.parse(string)
-    grid = data['grid']
-  
-    Board.new(grid.size, grid.first.size, grid)
-  end
-  
-
   private
 
   # Check if there are 4 consecutive chips of the same color in the given array

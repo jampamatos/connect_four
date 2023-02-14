@@ -24,18 +24,11 @@ class Player
     @wins += 1
   end
 
-  # Serialize the player data to a JSON string
-  #   @return [String] The JSON representation of the player data
   def serialize
-    { name: @name, color: @color, wins: @wins }.to_json
+    pass
   end
 
-  # Deserialize a JSON string into a `Player` instance
-  #   @param serialized_player [String] The JSON representation of the player data
-  #
-  #   @return [Player] The deserialized `Player` instance
-  def self.deserialize(serialized_player)
-    data = JSON.parse(serialized_player)
-    Player.new(data['name'], data['color'], data['wins'])
+  def self.deserialize
+    pass
   end
 end
