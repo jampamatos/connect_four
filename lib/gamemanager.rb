@@ -13,13 +13,17 @@ require 'json'
 class GameManager
   include Singleton
 
-  PLAYER_1_DEFAULT = nil
-  PLAYER_2_DEFAULT = nil
-  BOARD_DEFAULT = nil
-  CURRENT_PLAYER_DEFAULT = PLAYER_1_DEFAULT
-
-  attr_accessor :player1, :player2, :ties, :board
+  attr_accessor :player1, :player2, :ties, :board, :games_played
   attr_reader :current_player
+
+  def initialize
+    @player1 = nil
+    @player2 = nil
+    @ties = 0
+    @board = nil
+    @games_played = 0
+    @current_player = nil
+  end
 
   def start_game
     Messages.clear_screen
@@ -32,7 +36,7 @@ class GameManager
       setup_game
     when 'L'
       # load game logic
-      pass
+      puts 'load game logic'
     when 'Q'
       Messages.quit_game
     end
@@ -49,6 +53,11 @@ class GameManager
   end
 
   def play_round
+    if @games_played.even?
+      @current_player = @player1
+    else
+      @current_player = @player2
+    end
     loop do
       Messages.clear_screen
       Messages.display_turn(@current_player)
@@ -58,10 +67,10 @@ class GameManager
         case input
         when 's'
           # save game logic
-          pass
+          next
         when 'l'
           # save game logic
-          pass
+          next
         when 'q'
           Messages.quit_game
         else
@@ -102,6 +111,7 @@ class GameManager
   end
 
   def game_tie
+    @games_played += 1
     Messages.clear_screen
     @board.show_board
     puts ''
@@ -113,6 +123,7 @@ class GameManager
   end
 
   def game_victory(player)
+    @games_played += 1
     Messages.clear_screen
     @board.show_board
     puts ''
