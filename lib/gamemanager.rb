@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'colorize'
-require 'singleton'
 
 require_relative 'board'
 require_relative 'player'
@@ -11,8 +10,6 @@ require_relative 'gameio'
 require 'json'
 
 class GameManager
-  include Singleton
-
   attr_accessor :player1, :player2, :ties, :board, :games_played
   attr_reader :current_player
 
