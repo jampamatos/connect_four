@@ -43,8 +43,8 @@ class Board
   #   @return [String] The color of the placed chip
   #   @raise [RuntimeError] If the specified column is full or outside the boundaries of the board
   def place_chip(player, column)
-    return raise 'Column is full' if column_full?(column)
-    return raise 'Placement outside of board boundaries' unless valid_placement?(column)
+    return :column_full if column_full?(column)
+    return :placement_outside_boundaries unless valid_placement?(column)
 
     row = grid.size - 1
     while row >= 0
@@ -90,10 +90,8 @@ class Board
   #   @return [Object, nil] returns the color of the winning player if there is a winner, otherwise returns nil.
   def check_diagonal
     diagonal_l_to_r = diagonal_l_to_r?
-    return diagonal_l_to_r if diagonal_l_to_r
-
     diagonal_r_to_l = diagonal_r_to_l?
-    return diagonal_r_to_l if diagonal_r_to_l
+    return diagonal_r_to_l || diagonal_l_to_r if diagonal_l_to_r || diagonal_r_to_l
 
     nil
   end
@@ -135,11 +133,10 @@ class Board
   def self.deserialize(string)
     data = JSON.parse(string)
     grid = data['grid']
-    rows = data['rows']
-    columns = data['columns']
-
-    Board.new(rows, columns, grid)
+  
+    Board.new(grid.size, grid.first.size, grid)
   end
+  
 
   private
 

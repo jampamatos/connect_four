@@ -2,5 +2,4 @@
 
 require_relative 'lib/gamemanager'
 
-gm = GameManager.new
-gm.start_game
+GameManager.instance.start_game

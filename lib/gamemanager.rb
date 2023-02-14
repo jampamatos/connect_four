@@ -1,23 +1,26 @@
 # frozen_string_literal: true
 
+require 'colorize'
+require 'singleton'
+
 require_relative 'board'
 require_relative 'player'
 require_relative 'messages'
+require_relative 'gameio'
 
 require 'json'
 
 class GameManager
-  attr_accessor :player1, :player2, :player1_wins, :player2_wins, :ties, :board, :first
+  include Singleton
 
-  @player1 = nil
-  @player2 = nil
+  PLAYER_1_DEFAULT = nil
+  PLAYER_2_DEFAULT = nil
+  BOARD_DEFAULT = nil
+  FIRST_DEFAULT = PLAYER_1_DEFAULT
+  CURRENT_PLAYER_DEFAULT = PLAYER_1_DEFAULT
 
-  @ties = 0
-
-  @board = nil
-
-  @first = @player1
-  @current_player = @player1
+  attr_accessor :player1, :player2, :ties, :board, :first
+  attr_reader :current_player
 
   def start_game
     Messages.clear_screen
@@ -29,7 +32,13 @@ class GameManager
     when 'N'
       setup_game
     when 'L'
-      if load_game
+      loaded_game = GameIO.load_game
+      if loaded_game
+        @board = loaded_game[:board]
+        @player1 = loaded_game[:player1]
+        @player2 = loaded_game[:player2]
+        @current_player = loaded_game[:current_player]
+        @first = loaded_game[:first]
         play_round
       else
         puts ''
@@ -54,7 +63,7 @@ class GameManager
 
   def play_round
     loop do
-      players = @first == @player1 ? [@player1, @player2] : [@player2, @player1]
+      players = @first == @player1 ? [@player2, @player1] : [@player1, @player2]
       players.each do |player|
         @current_player = player
         Messages.clear_screen
@@ -64,10 +73,12 @@ class GameManager
           input = Messages.input_column(player)
           case input
           when 's'
-            save_game
+            GameIO.save_game(board, player1, player2, current_player, first)
             next
           when 'l'
-            unless load_game
+            if GameIO.load_game
+              play_round
+            else
               puts ''
               puts 'Returning to game...'
               puts ''
@@ -76,18 +87,18 @@ class GameManager
               @board.show_board
               next
             end
+          when 'q'
+            Messages.quit_game
           else
             column = input.to_i
-            @board.place_chip(player, column)
-            break
-          end
-        rescue StandardError => e
-          if e.message == 'Column is full'
-            puts 'Column is full. Please select another column.'
-          elsif e.message == 'Placement outside of board boundaries'
-            puts 'Placement outside of board boundaries. Please select a valid column.'
-          else
-            raise e
+            case @board.place_chip(player, column)
+            when :column_full
+              puts 'Column is full. Please select another column.'
+            when :placement_outside_boundaries
+              puts 'Placement outside of board boundaries. Please select a valid column.'
+            else
+              break
+            end
           end
         end
         game_is_over(@board.game_over?) if @board.game_over?
@@ -102,6 +113,26 @@ class GameManager
       player = game == @player1.color ? @player1 : @player2
       game_victory(player)
     end
+  end
+
+  def serialize
+    GameIO.serialize({
+                       player1: @player1,
+                       player2: @player2,
+                       board: @board,
+                       first: @first,
+                       current_player: @current_player
+                     })
+  end
+
+  def self.deserialize(data)
+    game = new
+    game.player1 = data[:player1]
+    game.player2 = data[:player2]
+    game.board = data[:board]
+    game.first = data[:first]
+    game.current_player = data[:current_player]
+    game
   end
 
   private
@@ -126,6 +157,7 @@ class GameManager
   end
 
   def game_victory(player)
+    Messages.clear_screen
     @board.show_board
     puts ''
     puts "#{player.name} ".colorize(color: player.color.to_sym, mode: :bold) + 'won!'
@@ -151,66 +183,5 @@ class GameManager
         puts "Invalid input. Please type 'y' or 'n'."
       end
     end
-  end
-
-  def save_game
-    save_directory = './save'
-    Dir.mkdir(save_directory) unless Dir.exist?(save_directory)
-
-    save_file = ''
-    until (3..8).cover?(save_file.length)
-      puts 'Please enter a save game file name (3 to 8 characters long):'
-      save_file = gets.chomp
-      unless (3..8).cover?(save_file.length)
-        puts 'The save game file name must have between 3 to 8 characters. Please try again.'
-      end
-    end
-
-    save_file = File.join(save_directory, "#{save_file}.json")
-
-    data = {
-      board: @board.serialize,
-      player1: @player1.serialize,
-      player2: @player2.serialize,
-      current_player: @current_player,
-      first: @first
-    }
-
-    File.open(save_file, 'w') { |file| file.write(data.to_json) }
-    puts "Game saved successfully to #{save_file}."
-  end
-
-  def load_game
-    Messages.clear_screen
-    save_directory = './save'
-    Dir.mkdir(save_directory) unless Dir.exist?(save_directory)
-
-    save_files = Dir.glob("#{save_directory}/*.json")
-    if save_files.empty?
-      puts 'No saved games found.'
-      return false
-    end
-
-    puts 'Select a save game to load:'
-    save_files.each_with_index do |file, index|
-      puts "#{index + 1}. #{File.basename(file, '.json')}"
-    end
-
-    selected_index = gets.to_i - 1
-    until selected_index >= 0 && selected_index < save_files.length
-      puts 'Invalid selection. Please try again.'
-      selected_index = gets.to_i - 1
-    end
-
-    data = JSON.parse(File.read(save_files[selected_index]))
-    @board = Board.deserialize(data['board'])
-    @player1 = Player.deserialize(data['player1'])
-    @player2 = Player.deserialize(data['player2'])
-    @current_player = data['current_player']
-    @first = data['first']
-
-    puts "Game loaded successfully from #{save_files[selected_index]}."
-    @board.show_board
-    true
   end
 end

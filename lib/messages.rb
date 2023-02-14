@@ -13,11 +13,12 @@ module Messages
 
   def self.input_column(player)
     loop do
-      puts "#{player.name}, please enter a column number (1-7), 's' to save game, or 'l' to load game:"
+      puts "#{player.name}, please enter a column number (1-7), 's' to save game, 'l' to load game or 'q' to quit:"
       input = gets.chomp.downcase
       return input.to_i - 1 if input.to_i.between?(1, 7)
       return 's' if input == 's'
       return 'l' if input == 'l'
+      return 'q' if input == 'q'
 
       puts 'Invalid input. Please enter a number between 1-7, or "s" to save game, or "l" to load game.'
     end
