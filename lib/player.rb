@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'json'
-
 # Player Class
 # The `Player` class represents a player in a Connect Four game.
 # It contains the player's name, color, and number of wins.

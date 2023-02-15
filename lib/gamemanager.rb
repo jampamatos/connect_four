@@ -7,7 +7,6 @@ require_relative 'player'
 require_relative 'messages'
 require_relative 'gameio'
 
-require 'json'
 
 class GameManager
   attr_accessor :player1, :player2, :ties, :board, :games_played

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'colorize'
-require 'json'
 
 # Board Class
 # A class representing the Connect Four game board
