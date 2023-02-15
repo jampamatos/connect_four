@@ -82,4 +82,17 @@ module Messages
 
     option
   end
+
+  def self.ask_save_name(length, dir)
+    puts 'Enter a save name (max 8 characters, leave blank to cancel):'
+    loop do
+      save_name = gets.chomp.strip[0...length]
+      return nil if save_name.empty?
+      if File.exist?("#{dir}/#{save_name}.json")
+        puts 'A save file with that name already exists. Please choose a different name:'
+      else
+        return save_name
+      end
+    end
+  end
 end

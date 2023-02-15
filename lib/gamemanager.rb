@@ -172,4 +172,8 @@ class GameManager
       end
     end
   end
+
+  def save_game
+    GameIO.save_game(self)
+  end
 end
