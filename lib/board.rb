@@ -118,6 +118,16 @@ class Board
     nil
   end
 
+  def serialize
+    {
+      grid: @grid
+    }
+  end
+
+  def self.deserialize(data)
+    Board.new(data["grid"].size, data["grid"].first.size, data["grid"])
+  end
+
   private
 
   # Check if there are 4 consecutive chips of the same color in the given array

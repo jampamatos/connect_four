@@ -2,6 +2,8 @@
 
 require_relative '../lib/player'
 
+require 'json'
+
 describe Player do
   describe '#initialize' do
     it "creates a player with name 'John' and color 'red'" do
@@ -46,4 +48,35 @@ describe Player do
       expect(player_increment_two.wins).to eq(0)
     end
   end
+
+  describe '#serialize' do
+    it 'serializes a two parameters player data to a Hash' do
+      player = Player.new('John', 'red')
+      json = player.serialize
+      data = json
+      expect(data[:name]).to eq('John')
+      expect(data[:color]).to eq('red')
+      expect(data[:wins]).to eq(0)
+    end
+
+    it 'serializes a three parameters player data to a Hash' do
+      player = Player.new('Matthew', 'blue', 3)
+      json = player.serialize
+      data = json
+      expect(data[:name]).to eq('Matthew')
+      expect(data[:color]).to eq('blue')
+      expect(data[:wins]).to eq(3)
+    end
+  end
+
+  describe '.deserialize' do
+    it 'deserializes player data from a Hash' do
+      json = {'name' => "Alice", 'color' => "blue", 'wins' => 3}
+      player = Player.deserialize(json)
+      expect(player.name).to eq('Alice')
+      expect(player.color).to eq('blue')
+      expect(player.wins).to eq(3)
+    end
+  end
+
 end

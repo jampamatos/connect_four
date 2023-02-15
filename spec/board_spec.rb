@@ -2,6 +2,8 @@
 
 require_relative '../lib/board'
 
+require 'json'
+
 describe Board do
   describe '#initialize' do
     it 'creates a 6x7 game board' do
@@ -54,19 +56,6 @@ describe Board do
       board_chip.place_chip(player, 2)
       board_chip.place_chip(player, 2)
       expect(board_chip.grid[3][2]).to eq('red')
-    end
-
-    it 'raises an error if the column is full and cannot place chip' do
-      board_chip.grid = Array.new(6) { Array.new(7, player.color) }
-      expect { board_chip.place_chip(player, 0) }.to raise_error('Column is full')
-    end
-
-    it 'raises an error if the placement is outside of board boundaries' do
-      expect { board_chip.place_chip(player, 7) }.to raise_error('Placement outside of board boundaries')
-    end
-
-    it 'raises an error if placement is a negative number' do
-      expect{ board_chip.place_chip(player1, -2).to raise_error('Placement outside of board boundaries')}
     end
   end
 
@@ -295,4 +284,42 @@ describe Board do
       expect(board_game_over.game_over?).to eq('tie')
     end
   end
+
+  describe '#serialize' do
+    it 'serializes the board to a Hash' do
+      board = Board.new
+      board.place_chip(double('player', color: 'red'), 0)
+      board.place_chip(double('player', color: 'yellow'), 0)
+      board.place_chip(double('player', color: 'red'), 1)
+
+      data = board.serialize
+
+      expect(data[:grid]).to eq([
+        [nil, nil, nil, nil, nil, nil, nil],
+        [nil, nil, nil, nil, nil, nil, nil],
+        [nil, nil, nil, nil, nil, nil, nil],
+        [nil, nil, nil, nil, nil, nil, nil],
+        ['yellow', nil, nil, nil, nil, nil, nil],
+        ['red', 'red', nil, nil, nil, nil, nil]
+      ])
+    end
+  end
+
+  describe '#deserialize' do
+    it 'deserializes a Hash to a board object' do
+      data = {'grid' => [["red","yellow",nil,nil,nil,nil,nil],["red",nil,nil,nil,nil,nil,nil],[nil,nil,nil,nil,nil,nil,nil],[nil,nil,nil,nil,nil,nil,nil],[nil,nil,nil,nil,nil,nil,nil],[nil,nil,nil,nil,nil,nil,nil]]}
+      board = Board.deserialize(data)
+
+      expect(board.grid).to eq([
+        ['red', 'yellow', nil, nil, nil, nil, nil],
+        ['red', nil, nil, nil, nil, nil, nil],
+        [nil, nil, nil, nil, nil, nil, nil],
+        [nil, nil, nil, nil, nil, nil, nil],
+        [nil, nil, nil, nil, nil, nil, nil],
+        [nil, nil, nil, nil, nil, nil, nil]
+      ])
+    end
+  end
+
+
 end

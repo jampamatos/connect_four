@@ -9,16 +9,15 @@ require_relative 'gameio'
 
 
 class GameManager
-  attr_accessor :player1, :player2, :ties, :board, :games_played
-  attr_reader :current_player
+  attr_accessor :player1, :player2, :ties, :board, :games_played, :current_player
 
-  def initialize
-    @player1 = nil
-    @player2 = nil
+  def initialize(player1 = nil, player2 = nil, board = nil, current_player = nil)
+    @player1 = player1
+    @player2 = player2
     @ties = 0
-    @board = nil
+    @board = board
     @games_played = 0
-    @current_player = nil
+    @current_player = current_player
   end
 
   def start_game
@@ -92,6 +91,32 @@ class GameManager
     else
       player = game == @player1.color ? @player1 : @player2
       game_victory(player)
+    end
+  end
+
+  def serialize
+    {
+      'player1' => @player1.serialize,
+      'player2' => @player2.serialize,
+      'ties' => @ties,
+      'board' => @board.serialize,
+      'games_played' => @games_played,
+      'current_player' => @current_player.serialize
+    }.to_json
+  end
+
+  def self.deserialize(data)
+    game_data = JSON.parse(data)
+    player1 = Player.deserialize(game_data['player1'])
+    player2 = Player.deserialize(game_data['player2'])
+    board = Board.deserialize(game_data['board'])
+    current_player = Player.deserialize(game_data['current_player'])
+    ties = game_data['ties']
+    games_played = game_data['games_played']
+
+    GameManager.new(player1, player2, board, current_player).tap do |game_manager|
+      game_manager.ties = ties
+      game_manager.games_played = games_played
     end
   end
 

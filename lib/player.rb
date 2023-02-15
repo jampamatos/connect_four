@@ -23,10 +23,14 @@ class Player
   end
 
   def serialize
-    pass
+    {
+      name: @name,
+      color: @color,
+      wins: @wins
+    }
   end
 
-  def self.deserialize
-    pass
+  def self.deserialize(data)
+    Player.new(data['name'], data['color'], data['wins'])
   end
 end
