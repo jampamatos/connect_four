@@ -9,7 +9,7 @@ require_relative 'gameio'
 
 
 class GameManager
-  attr_accessor :player1, :player2, :ties, :board, :games_played, :current_player
+  attr_accessor :player1, :player2, :ties, :board, :games_played, :current_player, :loaded_player
 
   def initialize(player1 = nil, player2 = nil, board = nil, current_player = nil)
     @player1 = player1
@@ -18,6 +18,7 @@ class GameManager
     @board = board
     @games_played = 0
     @current_player = current_player
+    @loaded_player = false
   end
 
   def start_game
@@ -30,8 +31,7 @@ class GameManager
     when 'N'
       setup_game
     when 'L'
-      # load game logic
-      puts 'load game logic'
+      GameIO.load_game
     when 'Q'
       Messages.quit_game
     end
@@ -53,6 +53,10 @@ class GameManager
     else
       @current_player = @player2
     end
+
+    @current_player = @loaded_player if @loaded_player
+    @loaded_player = false
+
     loop do
       Messages.clear_screen
       Messages.display_turn(@current_player)
@@ -61,11 +65,9 @@ class GameManager
         input = Messages.input_column(@current_player)
         case input
         when 's'
-          # save game logic
-          next
+          save_game
         when 'l'
-          # save game logic
-          next
+          GameIO.load_game
         when 'q'
           Messages.quit_game
         else
@@ -106,7 +108,7 @@ class GameManager
   end
 
   def self.deserialize(data)
-    game_data = JSON.parse(data)
+    game_data = JSON.parse(JSON.parse(data))
     player1 = Player.deserialize(game_data['player1'])
     player2 = Player.deserialize(game_data['player2'])
     board = Board.deserialize(game_data['board'])
@@ -114,10 +116,11 @@ class GameManager
     ties = game_data['ties']
     games_played = game_data['games_played']
 
-    GameManager.new(player1, player2, board, current_player).tap do |game_manager|
-      game_manager.ties = ties
-      game_manager.games_played = games_played
-    end
+    game_manager = GameManager.new(player1, player2, board, current_player)
+    game_manager.ties = ties
+    game_manager.games_played = games_played
+
+    game_manager
   end
 
   private

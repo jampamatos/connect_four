@@ -25,6 +25,26 @@ class GameIO
     end
   end
 
+  def self.load_game
+    files = Dir.entries(SAVE_DIR).select { |file| file.end_with?('.json') }
+    if files.empty?
+      puts 'No saved games found.'
+      return
+    end
+    puts 'Saved games:'
+    puts ''
+    list_saved_games
+
+    file_number = Messages.ask_file_number(files.size)
+
+    file_path = "#{SAVE_DIR}/#{files[file_number - 1]}"
+    game_manager = GameManager.deserialize(File.read(file_path))
+    puts "Game loaded from #{file_path}."
+    sleep(0.5)
+    game_manager.loaded_player = game_manager.current_player
+    game_manager.play_round
+  end
+
   def self.list_saved_games
     files = Dir.entries(SAVE_DIR).select { |file| file.end_with?('.json') }
     files.each_with_index { |file, index| puts "#{index + 1}. #{File.basename(file, '.*')}" }

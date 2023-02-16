@@ -95,4 +95,16 @@ module Messages
       end
     end
   end
+
+  def self.ask_file_number(max_number)
+    loop do
+      print "Enter the number of the file you want to load: "
+      number = gets.chomp.to_i
+      if number.between?(1, max_number)
+        return number
+      else
+        puts "Invalid number. Please enter a number between 1 and #{max_number}."
+      end
+    end
+  end
 end

@@ -125,7 +125,11 @@ class Board
   end
 
   def self.deserialize(data)
-    Board.new(data["grid"].size, data["grid"].first.size, data["grid"])
+    unless data["grid"].nil?
+      Board.new(data["grid"].size, data["grid"].first.size, data["grid"])
+    else
+      Board.new
+    end
   end
 
   private
