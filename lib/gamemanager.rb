@@ -31,7 +31,7 @@ class GameManager
     when 'N'
       setup_game
     when 'L'
-      GameIO.load_game
+      start_game unless GameIO.load_game
     when 'Q'
       Messages.quit_game
     end
@@ -58,16 +58,15 @@ class GameManager
     @loaded_player = false
 
     loop do
-      Messages.clear_screen
-      Messages.display_turn(@current_player)
-      @board.show_board
+      show_board
       loop do
         input = Messages.input_column(@current_player)
         case input
         when 's'
           save_game
+          show_board
         when 'l'
-          GameIO.load_game
+          show_board unless GameIO.load_game
         when 'q'
           Messages.quit_game
         else
@@ -178,5 +177,11 @@ class GameManager
 
   def save_game
     GameIO.save_game(self)
+  end
+
+  def show_board
+    Messages.clear_screen
+    Messages.display_turn(@current_player)
+    @board.show_board
   end
 end

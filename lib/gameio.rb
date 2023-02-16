@@ -20,8 +20,10 @@ class GameIO
     begin
       File.open("#{SAVE_DIR}/#{save_name}.json", 'w') { |file| file.write(save_data.to_json) }
       puts "File created: #{SAVE_DIR}/#{save_name}.json"
+      sleep(1)
     rescue => e
       puts "Error saving file: #{e.message}"
+      sleep(1)
     end
   end
 
@@ -29,7 +31,8 @@ class GameIO
     files = Dir.entries(SAVE_DIR).select { |file| file.end_with?('.json') }
     if files.empty?
       puts 'No saved games found.'
-      return
+      sleep(1)
+      return false
     end
     puts 'Saved games:'
     puts ''
