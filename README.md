@@ -47,3 +47,16 @@ This project was implemented using the following technologies:
 * [JSON](https://www.json.org/json-en.html) data interchange format
 
 The project was developed using Git for version control and hosted on GitHub.
+
+## Usage Instructions
+
+To play the game, follow these steps:
+
+1. Clone the repository or download the files.
+2. In a terminal, navigate to the directory where you saved the files.
+3. Run the command ruby play.rb.
+4. Follow the prompts to play the game.
+
+Alternatively, you can play the game online with a live preview on [Replit](https://replit.com/@jampamatps/Connect-Four?v=1).
+
+Enjoy the game!
