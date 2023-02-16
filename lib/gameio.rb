@@ -5,10 +5,16 @@ require 'json'
 require_relative 'messages'
 require_relative 'gamemanager'
 
+# GameIO Class
+# This class provides input/output methods for the Connect Four gam
 class GameIO
   SAVE_DIR = './save'
   MAX_FILENAME_LENGTH = 8
 
+  # Saves the current game state to a file
+  #   @param game_manager [GameManager] the current game state to be saved
+  #
+  #   @return [nil] prints a message indicating the success or failure of the save
   def self.save_game(game_manager)
     Messages.clear_screen
     list_saved_games
@@ -27,6 +33,8 @@ class GameIO
     end
   end
 
+  # Loads a saved game from a file
+  #   @return [Boolean] false if no saved games are found, otherwise returns the result of the play_round method
   def self.load_game
     files = Dir.entries(SAVE_DIR).select { |file| file.end_with?('.json') }
     if files.empty?
@@ -47,7 +55,9 @@ class GameIO
     game_manager.loaded_player = game_manager.current_player
     game_manager.play_round
   end
-
+  
+  # Lists all saved games
+  #   @return [nil] prints a list of all saved games to the console
   def self.list_saved_games
     files = Dir.entries(SAVE_DIR).select { |file| file.end_with?('.json') }
     files.each_with_index { |file, index| puts "#{index + 1}. #{File.basename(file, '.*')}" }
