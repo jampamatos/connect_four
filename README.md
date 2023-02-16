@@ -60,3 +60,66 @@ To play the game, follow these steps:
 Alternatively, you can play the game online with a live preview on [Replit](https://replit.com/@jampamatps/Connect-Four?v=1).
 
 Enjoy the game!
+
+## Test Instructions
+
+This project includes automated tests to verify correct behavior of the code. The tests use the RSpec testing framework.
+
+To run the tests, ensure that you have RSpec installed:
+
+```bash
+$ gem install rspec
+```
+
+Then, navigate to the project root directory and run:
+
+```bash
+$ rspec
+```
+
+This will run all the tests in the `spec/` directory and output the results to the console. All tests should pass without error. If any tests fail, review the error message to determine the cause of the failure.
+
+Note that the tests depend on the behavior of the code as it exists at the time the tests were written. If changes are made to the code, it is important to verify that the tests still pass to ensure that the changes did not introduce any regressions.
+
+## Project Status
+
+The basic functionality for this Connect Four game has been implemented, and all the acceptance tests pass. However, there is still room for improvement and additional features that can be added. For instance, the following could be considered for future development:
+
+* Implementing an AI player so that the game can be played solo.
+* Adding a game lobby, where players can join or create games and play with other players online.
+* Implementing a feature to allow users to customize the board size.
+* Implementing a feature to allow users to undo their last move.
+
+If you encounter any issues or have suggestions for improvement, please open an issue on this repository.
+
+## Future Improvements
+
+Here are some potential future improvements that could be made to the project:
+
+* **Implement an AI opponent:** Currently, the game only supports two human players. Adding an AI opponent would allow for single player games and could be a fun challenge to implement.
+* **Add support for different board sizes:** While the classic Connect Four game is played on a 6x7 board, it would be interesting to add support for custom board sizes. This could allow for more varied gameplay and could be a good challenge to implement.
+* **Improve the user interface:** While the game is functional, the user interface could be improved to make the game more visually appealing and easier to use. For example, a more polished UI could include better graphics, more intuitive controls, and support for different screen sizes.
+* **Add chip falling animation:** Animating the chips falling into the board would add a nice touch of interactivity and make the game more engaging for the players.
+* **Add a Reset function:** Adding a reset function would allow players to start a new game without having to close and reopen the program, improving the user experience.
+
+These are just a few ideas for future improvements, and there are many other features that could be added to the game.
+
+## Acknowledgments
+
+I would like to thank The Odin Project for providing the project requirements and inspiration for this game. We would also like to thank the following resources for their help in creating this project:
+
+* The Ruby Programming Language book by Yukihiro Matsumoto
+* The Ruby Style Guide by Bozhidar Batsov
+* Ruby-Doc.org for the Ruby documentation
+* Stack Overflow and OpenAI for providing helpful answers to our coding questions
+* GitHub for providing a platform to host our code and collaborate with others
+
+We are grateful to have had access to these resources throughout the development process, and we hope that this game and its accompanying documentation can serve as a helpful resource for other beginner developers.
+
+## Author
+
+This project was developed by [Jampa Matos](mailto:jp.coutm@gmail.com) as part of the curriculum for The Odin Project's Ruby Programming course.
+
+* GitHub: [jampamatos](https://github.com/jampamatos)
+* Twitter: [@jumpamatos](https://twitter.com/jumpamatos)
+* Linkedin: [@jampamatos](https://www.linkedin.com/in/jampamatos/)
